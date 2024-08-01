@@ -1,0 +1,6 @@
+# Development related
+/target
+/.direnv
+
+# Assets
+/bootrom.bin
