@@ -3,6 +3,7 @@ use unicorn_engine::RegisterARM;
 
 mod debug;
 mod hardware;
+mod patches;
 
 /// Where our code is running.
 const BOOTROM_BASE: u64 = 0x20000000;
@@ -35,6 +36,7 @@ fn main() {
 
     // We'll now map hardware.
     hardware::map_hardware(&mut engine);
+    patches::add_patches(&mut engine);
 
     // Honestly, I have zero clue on what the SP should be.
     // We'll just assume it's towards the bottom here.
@@ -66,6 +68,5 @@ fn main() {
             3000000,
         )
         .unwrap();
-
     debug::print_engine_state(&mut engine);
 }

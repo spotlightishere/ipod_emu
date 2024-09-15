@@ -13,20 +13,24 @@ macro_rules! map_generic {
             // Length
             0x10000,
             // Read callback
-            Some(|_: &mut Unicorn<()>, address: u64, size: usize| -> u64 {
+            Some(|engine: &mut Unicorn<()>, address: u64, size: usize| -> u64 {
+                let current_pc = engine.pc_read().expect("should be able to get current PC");
                 println!(
-                    "[{}] Ignoring read to address {:08x} for size {:08x}",
+                    "[READ {}] PC {:08x} to address {:08x} for size {:08x}",
                     $block_name,
+                    current_pc,
                     ($base_address + address),
                     size
                 );
                 0
             }),
             // Write callback
-            Some(|_: &mut Unicorn<()>, address: u64, size: usize, value: u64| {
+            Some(|engine: &mut Unicorn<()>, address: u64, size: usize, value: u64| {
+                let current_pc = engine.pc_read().expect("should be able to get current PC");
                 println!(
-                    "[{}] Ignoring write to address {:08x} for size {:08x} and value {:08x}",
+                    "[WRITE {}] PC {:08x}, writing to {:08x} for size {:08x} and value {:08x}",
                     $block_name,
+                    current_pc,
                     ($base_address + address),
                     size,
                     value
@@ -94,6 +98,10 @@ pub fn map_hardware(engine: &mut Unicorn<()>) {
     map_generic!(engine, "UNKNOWN1", 0x3e700000);
     map_generic!(engine, "TIMER", 0x3c700000);
     map_generic!(engine, "NAND", 0x38a00000);
+    map_generic!(engine, "SPI0", 0x3c300000);
+    map_generic!(engine, "AES", 0x38c00000);
+    map_generic!(engine, "SHA1", 0x38000000);
+    map_generic!(engine, "USB_PHY", 0x3c400000);
 
     // We do want to specially handle Chip ID reads and writes.
     engine
