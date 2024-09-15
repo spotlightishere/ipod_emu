@@ -1,8 +1,8 @@
 use unicorn_engine::Unicorn;
 
-pub const CHIPID_BASE: u64 = 0x3d100000;
+pub const BASE_ADDRESS: u64 = 0x3d100000;
 
-pub fn chipid_read(_: &mut Unicorn<()>, address: u64, _size: usize) -> u64 {
+pub fn hw_read(_: &mut Unicorn<()>, address: u64, _size: usize) -> u64 {
     // Values taken from a 2009 iPod nano 5th generation.
     // TODO(spotlightishere): Update from a genuine 7th generation.
     //
@@ -23,13 +23,13 @@ pub fn chipid_read(_: &mut Unicorn<()>, address: u64, _size: usize) -> u64 {
         0x10 => 0x00000000,
         // Unknown.
         0x14 => 0x00000004,
-        _ => panic!("[CHIP ID] Unknown read to {}", CHIPID_BASE + address),
+        _ => panic!("[CHIP ID] Unknown read to {}", BASE_ADDRESS + address),
     }
 }
 
-pub fn chipid_write(_: &mut Unicorn<()>, address: u64, size: usize, value: u64) {
+pub fn hw_write(_: &mut Unicorn<()>, address: u64, size: usize, value: u64) {
     println!("[CHIP ID] Block was written to!");
-    println!("\tAddress\t{:08x}", CHIPID_BASE + address);
+    println!("\tAddress\t{:08x}", BASE_ADDRESS + address);
     println!("\tSize\t{:08x}", size);
     println!("\tValue\t{:08x}", value);
     panic!("expected no writes to Chip ID block")

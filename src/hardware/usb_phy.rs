@@ -1,10 +1,10 @@
 use unicorn_engine::Unicorn;
 
-pub const USB_PHY_BASE: u64 = 0x3c400000;
+pub const BASE_ADDRESS: u64 = 0x3c400000;
 
-pub fn usb_phy_read(_: &mut Unicorn<()>, address: u64, _size: usize) -> u64 {
+pub fn hw_read(_: &mut Unicorn<()>, address: u64, _size: usize) -> u64 {
     println!("[USB PHY] Block was read from!");
-    println!("\tAddress\t{:08x}", USB_PHY_BASE + address);
+    println!("\tAddress\t{:08x}", BASE_ADDRESS + address);
 
     // TODO(spotlightishere): Implement USB
     //
@@ -17,8 +17,8 @@ pub fn usb_phy_read(_: &mut Unicorn<()>, address: u64, _size: usize) -> u64 {
     }
 }
 
-pub fn usb_phy_write(_: &mut Unicorn<()>, address: u64, _size: usize, value: u64) {
+pub fn hw_write(_: &mut Unicorn<()>, address: u64, _size: usize, value: u64) {
     println!("[USB PHY] Block was written to!");
-    println!("\tAddress\t{:08x}", USB_PHY_BASE + address);
+    println!("\tAddress\t{:08x}", BASE_ADDRESS + address);
     println!("\tValue\t{:08x}", value);
 }

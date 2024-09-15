@@ -8,7 +8,7 @@ mod usb_phy;
 // Registration Macros //
 /////////////////////////
 
-/// Sets up a MMIO mapping with anonymous closures for read/write.
+/// Sets up an MMIO mapping with anonymous closures for read/write.
 macro_rules! map_generic {
     ($engine:ident, $block_name:expr, $base_address:expr) => {
         $engine.mmio_map(
@@ -44,6 +44,25 @@ macro_rules! map_generic {
     };
 }
 
+/// Sets up an MMIO mapping
+macro_rules! map_module {
+    // We need module as both an ident and expr.
+    // https://stackoverflow.com/a/65497714
+    ($engine:ident, $module:tt) => {
+        map_module!($engine, $module, $module);
+    };
+    ($engine:ident, $module:ident, $module_name:ident) => {
+        $engine
+        .mmio_map(
+            $module::BASE_ADDRESS,
+            0x10000,
+            Some($module::hw_read),
+            Some($module::hw_write),
+        )
+        .expect(concat!("should be able to map ", stringify!($module_name)));
+    };
+}
+
 ////////////////////
 // Actual mapping //
 ////////////////////
@@ -69,30 +88,7 @@ pub fn map_hardware(engine: &mut Unicorn<()>) {
 
     // TODO(spotlightishere): This may get long very quickly...
     // Let's find a way to eventually migrate it to a macro.
-    engine
-        .mmio_map(
-            chipid::CHIPID_BASE,
-            0x10000,
-            Some(chipid::chipid_read),
-            Some(chipid::chipid_write),
-        )
-        .expect("should be able to map CHIPID");
-
-    engine
-        .mmio_map(
-            gpio::GPIO_BASE,
-            0x10000,
-            Some(gpio::gpio_read),
-            Some(gpio::gpio_write),
-        )
-        .expect("should be able to map GPIO");
-
-    engine
-        .mmio_map(
-            usb_phy::USB_PHY_BASE,
-            0x10000,
-            Some(usb_phy::usb_phy_read),
-            Some(usb_phy::usb_phy_write),
-        )
-        .expect("should be able to map GPIO");
+    map_module!(engine, chipid);
+    map_module!(engine, gpio);
+    map_module!(engine, usb_phy);
 }

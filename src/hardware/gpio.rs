@@ -3,7 +3,7 @@ use std::sync::{LazyLock, Mutex};
 use unicorn_engine::Unicorn;
 
 /// The base address of the GPIO block.
-pub const GPIO_BASE: u64 = 0x3cf00000;
+pub const BASE_ADDRESS: u64 = 0x3cf00000;
 
 /// Similar to the first-generation iPod touch, we have 12 (0xc) pins per GPIO pad.
 const GPIO_PAD_COUNT: u32 = 12;
@@ -21,7 +21,7 @@ fn find_gpio_pad(address: u64) -> u32 {
     (address / 0x20) as u32
 }
 
-pub fn gpio_read(_: &mut Unicorn<()>, address: u64, _size: usize) -> u64 {
+pub fn hw_read(_: &mut Unicorn<()>, address: u64, _size: usize) -> u64 {
     println!("[GPIO] Block was read from!");
     println!("\tAddress\t{:08x}", address);
 
@@ -48,7 +48,7 @@ pub fn gpio_read(_: &mut Unicorn<()>, address: u64, _size: usize) -> u64 {
     current_state as u64
 }
 
-pub fn gpio_write(_: &mut Unicorn<()>, address: u64, _size: usize, value: u64) {
+pub fn hw_write(_: &mut Unicorn<()>, address: u64, _size: usize, value: u64) {
     println!("[GPIO] Block was written to!");
     println!("\tAddress\t{:08x}", address);
 
