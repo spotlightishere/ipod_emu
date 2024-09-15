@@ -2,6 +2,7 @@ use unicorn_engine::Unicorn;
 
 mod chipid;
 mod gpio;
+mod usb_phy;
 
 /////////////////////////
 // Registration Macros //
@@ -65,7 +66,6 @@ pub fn map_hardware(engine: &mut Unicorn<()>) {
     map_generic!(engine, "SPI0", 0x3c300000);
     map_generic!(engine, "AES", 0x38c00000);
     map_generic!(engine, "SHA1", 0x38000000);
-    map_generic!(engine, "USB_PHY", 0x3c400000);
 
     // TODO(spotlightishere): This may get long very quickly...
     // Let's find a way to eventually migrate it to a macro.
@@ -84,6 +84,15 @@ pub fn map_hardware(engine: &mut Unicorn<()>) {
             0x10000,
             Some(gpio::gpio_read),
             Some(gpio::gpio_write),
+        )
+        .expect("should be able to map GPIO");
+
+    engine
+        .mmio_map(
+            usb_phy::USB_PHY_BASE,
+            0x10000,
+            Some(usb_phy::usb_phy_read),
+            Some(usb_phy::usb_phy_write),
         )
         .expect("should be able to map GPIO");
 }
