@@ -1,10 +1,11 @@
 use unicorn_engine::Unicorn;
 
 mod chipid;
+mod gpio;
 
-////////////////////
-// Generic Blocks //
-////////////////////
+/////////////////////////
+// Registration Macros //
+/////////////////////////
 
 /// Sets up a MMIO mapping with anonymous closures for read/write.
 macro_rules! map_generic {
@@ -38,7 +39,7 @@ macro_rules! map_generic {
                     value
                 )
             })
-        ).expect(format!("should be able to map {}", $block_name).as_str());
+        ).expect(concat!("should be able to map ", $block_name));
     };
 }
 
@@ -57,7 +58,6 @@ pub fn map_hardware(engine: &mut Unicorn<()>) {
     map_generic!(engine, "CLCKGEN", 0x3c500000);
     // TODO(spotlightishere): Maybe we do want to care about this?
     map_generic!(engine, "POWER", 0x39700000);
-    map_generic!(engine, "GPIO", 0x3cf00000);
     // TODO(spotlightishere): What is this?
     map_generic!(engine, "UNKNOWN1", 0x3e700000);
     map_generic!(engine, "TIMER", 0x3c700000);
@@ -67,6 +67,8 @@ pub fn map_hardware(engine: &mut Unicorn<()>) {
     map_generic!(engine, "SHA1", 0x38000000);
     map_generic!(engine, "USB_PHY", 0x3c400000);
 
+    // TODO(spotlightishere): This may get long very quickly...
+    // Let's find a way to eventually migrate it to a macro.
     engine
         .mmio_map(
             chipid::CHIPID_BASE,
@@ -74,5 +76,14 @@ pub fn map_hardware(engine: &mut Unicorn<()>) {
             Some(chipid::chipid_read),
             Some(chipid::chipid_write),
         )
-        .expect("should be able to map chip ID");
+        .expect("should be able to map CHIPID");
+
+    engine
+        .mmio_map(
+            gpio::GPIO_BASE,
+            0x10000,
+            Some(gpio::gpio_read),
+            Some(gpio::gpio_write),
+        )
+        .expect("should be able to map GPIO");
 }
